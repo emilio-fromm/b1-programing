@@ -10,10 +10,12 @@ import os
 
 app = FastAPI()
 
+# see ref in proj descript 
+
 class Task(BaseModel):
     id: int
     title: str
-    description: str | None = None
+    description: str | None = None # optional
     completed: bool
 
 
@@ -76,6 +78,7 @@ def get_task(task_id: int):
     tasks = load_tasks()
     for task in tasks:
         task = json.loads(task)
+        
         if task["id"] == task_id:
             return {"task": task}
     raise HTTPException(status_code=404, detail="Task not found")
@@ -83,8 +86,10 @@ def get_task(task_id: int):
 @app.post("/tasks")
 def post_task(TaskCreating: TaskCreate):
     tasks = load_tasks()
+    
     if tasks:
         newId = max(json.loads(task)["id"] for task in tasks) + 1
+        
     else:
         newId = 1
     print("NEUE ID: ", newId)
@@ -120,7 +125,7 @@ def delete_task(task_id: int):
             tasks.pop(i)
             save_tasks(tasks)
 
-            return {"updated task(s)": [json.loads(t) for t in tasks]}
+            return {"updated task(s)": [json.loads(task) for task in tasks]}
 
     raise HTTPException(status_code=404, detail="Task with this ID not found")
 
