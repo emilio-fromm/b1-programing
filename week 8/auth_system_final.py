@@ -75,31 +75,29 @@ class User:
         return self.__privilege_level
 
 
-print("=== Authentication System Test ===\n")
-print("deubg - initializng users")
 
-admin = User("admin", "admin123", "admin")
-alice = User("alice", "secret99", "standard")
-guest = User("guest_user", "guest01", "guest")
+admin = User("herr_schneider", "admin123", "admin")
+lukas = User("lukas_meier", "secret99", "standard")
+sarah = User("sarah_w", "guest01", "guest")
 
-print("--- Correct Login Test ---")
-print("Alice login:", alice.authenticate("secret99"))
-print("Session token:", alice.get_session_token())
+print("--- Korrekte Anmeldung / correct login ---")
+print("Lukas login:", lukas.authenticate("secret99"))
+print("Session token:", lukas.get_session_token())
 
-print("\n--- Wrong password (3x for lockout) ---")
-print("Alice wrong:", alice.authenticate("wrongpassword"))
-print("Alice wrong:", alice.authenticate("wrongpassword"))
-print("Alice wrong:", alice.authenticate("wrongpassword"))
+print("\n--- Falsches Passwort (3x für Sperrung)  / wrong password ---")
+print("Lukas wrong:", lukas.authenticate("wrongpassword"))
+print("Lukas wrong:", lukas.authenticate("wrongpassword"))
+print("Lukas wrong:", lukas.authenticate("wrongpassword"))
 
-print("\nAlice account info:", alice.get_safe_info())
+print("\nLukas account overview:", lukas.get_safe_info())
 
-print("\n--- Admin unlocks account ---")
-print("Unlocked:", alice.reset_login_attempts("admin123"))
-print("Alice after:", alice.get_safe_info())
+print("\n--- Admin entsperrt Konto / admin unlocks account---")
+print("unlocked:", lukas.reset_login_attempts("admin123"))
+print("Lukas after:", lukas.get_safe_info())
 
-print("\n--- Permission Check ---")
-print("Admin has admin rights:", admin.check_privileges("admin"))
-print("Guest has admin rights:", guest.check_privileges("admin"))
-print("Alice has standard rights:", alice.check_privileges("standard"))
+print("\n--- Rechteprüfung / privilege control---")
+print("Admin has admin controls:", admin.check_privileges("admin"))
+print("Sarah has admin privileges:", sarah.check_privileges("admin"))
+print("Lukas has standard rights:", lukas.check_privileges("standard"))
 
-print("Last login admin:", admin.get_safe_info()["last_login"])
+print("Last Login Admin:", admin.get_safe_info()["last_login"])
