@@ -1,0 +1,27 @@
+Discounted Product Price List: 
+
+Product Name: Laptop Computer
+Original Price: 200
+Discount: 20.0%
+Discounted Price 160.0
+
+Product Name: Winter Jacket
+Original Price: 129.99
+Discount: 40.0%
+Discounted Price 77.994
+
+Product Name: Python Programming Book
+Original Price: 49.99
+Discount: 45.0%
+Discounted Price 27.494500000000002
+
+Product Name: Coffee Maker
+Original Price: 79.99
+Discount: 25.0%
+Discounted Price 59.99249999999999
+
+Product Name: Wireless Headphones
+Original Price: 199.99
+Discount: 20.0%
+Discounted Price 159.99200000000002
+
