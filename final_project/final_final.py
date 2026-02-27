@@ -1,138 +1,56 @@
-# Copyright by Emilio
-# Final Project - Task Management API with FastAPI
-# Tasks are stored as JSON in a .txt file
+# final project, written and copyright by Emilio Fromm
 
 from fastapi import FastAPI, HTTPException
-from helper_functions import load_tasks, save_task, save_tasks
 from pydantic import BaseModel
 import json
 import os
-
-app = FastAPI()
-
-# see ref in proj descript 
-
-class Task(BaseModel):
-    id: int
-    title: str
-    description: str | None = None # optional
-    completed: bool
+from pathlib import Path
 
 
-class TaskCreate(BaseModel):
-    title: str
-    description: str | None = None
+our_dir = Path(__file__).parent
 
-
-@app.get("/")
-def root():
-    return {"message": "Task Management API running - by Emilio"}
-
-@app.get("/tasks")
-def get_all_tasks(completed: bool = None):
-
-    tasks = load_tasks()
-    parsedTasks = [json.loads(task) for task in tasks]
-
-    if completed is not None:
-        filterdTasks = []
-        for task in parsedTasks:
-            if task["completed"] == completed:
-                filterdTasks.append(task)
-        return {"tasks": filterdTasks}
-    return {"ALL TASKS": parsedTasks}
-
-@app.get("/first_task")
-def get_first_task():
-    tasks = load_tasks()
-    if len(tasks) != 0:
-        return {"task One": json.loads(tasks[0])}
-    else:
-        raise HTTPException(status_code=404, detail="File is empty, no tasks found")
-
-@app.get("/tasks/stats")
-def tasks_stats():
-    taskCount = 0
-    completedTaskCount = 0
-    completedPercentage = 0
-    tasks = load_tasks()
-
-    for task in tasks:
-        task = json.loads(task)
-        if task["completed"] == True:
-            completedTaskCount += 1
-        taskCount += 1
-
-    if taskCount > 0:
-        completedPercentage = (completedTaskCount / taskCount) * 100
-
-    return {
-        "Total tasks": taskCount,
-        "Completed tasks": completedTaskCount,
-        "Pending tasks": taskCount - completedTaskCount,
-        "Completion rate": str(completedPercentage) + "%"
-    }
-
-@app.get("/tasks/{task_id}")
-def get_task(task_id: int):
-    tasks = load_tasks()
-    for task in tasks:
-        task = json.loads(task)
-        
-        if task["id"] == task_id:
-            return {"task": task}
-    raise HTTPException(status_code=404, detail="Task not found")
-
-@app.post("/tasks")
-def post_task(TaskCreating: TaskCreate):
-    tasks = load_tasks()
+# Access a file in the same folder
+file_path = our_dir / "myfile.txt"
+def load_tasks():
     
-    if tasks:
-        newId = max(json.loads(task)["id"] for task in tasks) + 1
+    tasks = []
+    if os.path.exists(our_dir/"tasks.txt"):
+        print("found")
+        
+        with open(our_dir/"tasks.txt", "r") as file:
+            for line in file:
+                tasks.append(line.strip())
+            return tasks    
         
     else:
-        newId = 1
-    print("NEUE ID: ", newId)
-    newTask = Task(id=newId, title=TaskCreating.title, description=TaskCreating.description, completed=False)
-    save_task(newTask)
-    return {"task": newTask}
-
-@app.put("/tasks/{task_id}")
-def update_task(task_id: int, TaskCreating: TaskCreate):
-
-    tasks = load_tasks()
-    for i, task in enumerate(tasks):
-        task = json.loads(task)
-        print("task id: ", task["id"], "task id from url: ", task_id)
-        if task["id"] == task_id:
-            print("task found with ID: ", task_id)
-
-            tasks[i] = json.dumps(Task(id=task_id, title=TaskCreating.title, description=TaskCreating.description, completed=False).__dict__)
-            save_tasks(tasks)
-            return {"updated task(s)": [json.loads(t) for t in tasks]}
-
-    raise HTTPException(status_code=404, detail="Task with this ID not found")
+        print("File not found")
+        raise HTTPException(status_code=404, detail="File not found")
+        
+    
 
 
-@app.delete("/tasks/{task_id}")
-def delete_task(task_id: int):
-
-    tasks = load_tasks()
-    for i, task in enumerate(tasks):
-        task = json.loads(task)
-        print("task id: ", task["id"], "task id from url: ", task_id)
-        if task["id"] == task_id:
-            tasks.pop(i)
-            save_tasks(tasks)
-
-            return {"updated task(s)": [json.loads(task) for task in tasks]}
-
-    raise HTTPException(status_code=404, detail="Task with this ID not found")
-
-
-@app.delete("/tasks/")
-def delete_tasks():
-
+def save_task(task):
     tasks = []
-    save_tasks(tasks)
-    return {"updated task(s)": tasks}
+    print("DAS IST DIE TASK: ", task)
+    tasks = load_tasks()
+    tasks.append(json.dumps(task.__dict__))
+    
+     
+    if os.path.exists(our_dir/"tasks.txt"):
+        with open(our_dir/"tasks.txt", "w") as file:
+            for currentTask in tasks:
+                file.write( (currentTask) + "\n")
+    else:
+        print("File not found")
+        raise HTTPException(status_code=404, detail="File not found") 
+  
+def save_tasks(tasks):
+    
+    if os.path.exists(our_dir/"tasks.txt"):
+        with open(our_dir/"tasks.txt", "w") as file:
+            for currentTask in tasks:
+                file.write(currentTask + "\n")
+    else:
+        print("File not found")
+        raise HTTPException(status_code=404, detail="File not found")
+  
