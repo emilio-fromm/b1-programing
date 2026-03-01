@@ -1,3 +1,3 @@
 # Helper Functions
 
-# Add your helper functions here...
+This module contains various helper functions used in the final project.
